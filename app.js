@@ -20,6 +20,7 @@ function validateSchool(data) {
 
 app.post('/addSchool', (req, res) => {
   const school = req.body;
+  console.log('Received school data:', school);
 
   if (!validateSchool(school)) {
     return res.status(400).json({ error: 'Invalid input data' });
@@ -28,8 +29,16 @@ app.post('/addSchool', (req, res) => {
   const sql = `INSERT INTO schools (name, address, latitude, longitude) VALUES (?, ?, ?, ?)`;
   const params = [school.name.trim(), school.address.trim(), school.latitude, school.longitude];
 
+  console.log('Executing SQL:', sql);
+  console.log('With params:', params);
+
   db.query(sql, params, (err, results) => {
-    if (err) return res.status(500).json({ error: 'Database error' });
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    console.log('Insert successful:', results);
     res.json({ message: 'School added', id: results.insertId });
   });
 
